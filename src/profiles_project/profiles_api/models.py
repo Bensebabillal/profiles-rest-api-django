@@ -5,7 +5,7 @@ from django.contrib.auth.models import BaseUserManager
 
 
 
-class UserProfileManager(BaseException):
+class UserProfileManager(BaseUserManager):
     """help django to work with ower costume user model"""
 
     def creat_user(self,email,name,password=None):
