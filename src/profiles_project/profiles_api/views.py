@@ -6,64 +6,108 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from . import serializers
+from . import models
 
 # Create your views here.
 
-
-serializer_class =serializers.HelloSerializer
-
 class HelloApiView(APIView):
-    """Teste API View"""
+    """Test API View."""
 
-    def get (self,request,format=None):
-        """return a liste of APIView features"""
+    serializer_class = serializers.HelloSerializer
 
-        an_apiview =[
-            'used HTTP methode as function 9get,post,patch,put, delete)',
-            'it is similar to a trditional Django view',
+    def get(self, request, format=None):
+        """Returns a list of APIView features."""
+
+        an_apiview = [
+            'Uses HTTP methods as function (get, post, patch, put, delete)',
+            'It is similar to a traditional Django view',
             'Gives you the most control over your logic',
-            'is mapped manually to URLs',
+            'Is mapped manually to URLs'
         ]
 
-        return Response({'message': 'Hello! Word','an_apiview' : an_apiview })
+        return Response({'message': 'Hello!', 'an_apiview': an_apiview})
 
     def post(self, request):
-        """create hello message with our name. """
+        """Create a hello message with our name."""
 
-        serializer= serializers.HelloSerializer(data=request.data)
+        serializer = serializers.HelloSerializer(data=request.data)
 
         if serializer.is_valid():
-            name= serializer.data.get('name')
-            message ='hello {0}'.format(name)
-            return Response ({'message':message})
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        else :
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    def put(self, request, pk=None):
+        """Handles updating an object."""
 
-    def put(self,request,pk=None):
-        """handle updating an object"""
+        return Response({'method': 'put'})
 
-        return Response({'methode':'put'})
+    def patch(self, request, pk=None):
+        """Patch request, only updates fields provided in the request."""
 
-    def patch(self,request,pk=None):
-        """Patch request, only updates fields provided in the request ."""
+        return Response({'method': 'patch'})
 
-        return Response({'methode':'patch'})
+    def delete(self, request, pk=None):
+        """Deletes and object."""
 
-    def delete(self,request,pk=None):
-        """Delete an object"""
-
-        return Response({'methode':'delete'})
+        return Response({'method': 'delete'})
 
 
 class HelloViewSet(viewsets.ViewSet):
     """Test API ViewSet."""
-    def list(self,request):
-        """return a list of APIView features."""
-        a_viewset =[
-            'uses action (list, creat , retrieve , update, partial_update)',
-            'automatically maps to URLs using Routers',
-            'provides more functionnality with less code.',
+
+    serializer_class = serializers.HelloSerializer
+
+    def list(self, request):
+        """Return a hello message."""
+
+        a_viewset = [
+            'Uses actions (list, create, retrieve, update, partial_update)',
+            'Automatically maps to URLs using Routers',
+            'Provides more functionality with less code.'
         ]
 
-        return Response({'message':'hello!','a_viewset':a_viewset})
+        return Response({'message': 'Hello!', 'a_viewset': a_viewset})
+
+    def create(self, request):
+        """Create a new hello message."""
+
+        serializer = serializers.HelloSerializer(data=request.data)
+
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            message = 'Hello {0}'.format(name)
+            return Response({'message': message})
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def retrieve(self, request, pk=None):
+        """Handles getting an object by its ID."""
+
+        return Response({'http_method': 'GET'})
+
+    def update(self, request, pk=None):
+        """Handles updating an object."""
+
+        return Response({'http_method': 'PUT'})
+
+    def partial_update(self, request, pk=None):
+        """Handles updating part of an object."""
+
+        return Response({'http_method': 'PATCH'})
+
+    def destroy(self, request, pk=None):
+        """Handles removing an object."""
+
+        return Response({'http_method': 'DELETE'})
+
+
+class UserProfileViewSet(viewsets.ModelViewSet):
+    """Handles creating, creating and updating profiles."""
+
+    serializer_class = serializers.UserProfileSerializer
+    queryset = models.UserProfile.objects.all()
